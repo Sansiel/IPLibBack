@@ -4,12 +4,12 @@ from . import models
 from . import serializers
 
 
-class AuthorViewSet(viewsets.ModelViewSet):
+class AuthorViewSet(ListCreateAPIView):
     queryset = models.Author.objects.all()
     serializer_class = serializers.AuthorSerializer
 
 
-class BookViewSet(viewsets.ModelViewSet):
+class BookViewSet(ListCreateAPIView):
     queryset = models.Book.objects.all()
     serializer_class = serializers.BookSerializer
 
