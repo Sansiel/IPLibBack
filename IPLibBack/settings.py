@@ -28,8 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost', 
     '127.0.0.1',
-    'shrouded-oasis-18733.herokuapp.com',
-    '51.15.138.197',
+    'ip-lib-back.herokuapp.com',
 ]
 
 
