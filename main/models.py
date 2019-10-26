@@ -32,7 +32,7 @@ class Book(models.Model):
     )
 
     author = models.ForeignKey(
-        to='main.Author',
+        Author,
         verbose_name='Автор',
         on_delete=models.CASCADE,
     )
