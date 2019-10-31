@@ -1,7 +1,10 @@
 from rest_framework.generics import ListCreateAPIView
+from rest_framework import generics, viewsets
+from rest_framework.permissions import AllowAny
 
 from . import models
 from . import serializers
+from django.contrib.auth.models import User
 
 
 class AuthorViewSet(ListCreateAPIView):
@@ -19,3 +22,12 @@ class BookViewSet(ListCreateAPIView):
 
     def perform_update(self, serializer):
         serializer.save(author_id=self.request.data['author_id'])
+
+class UserList(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = serializers.UserSerializer
+
+
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = serializers.UserSerializer 
