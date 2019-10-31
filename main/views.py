@@ -8,11 +8,13 @@ from django.contrib.auth.models import User
 
 
 class AuthorViewSet(ListCreateAPIView):
+    permission_classes = [AllowAny]
     queryset = models.Author.objects.all()
     serializer_class = serializers.AuthorSerializer
 
 
 class BookViewSet(ListCreateAPIView):
+    permission_classes = [AllowAny]
     queryset = models.Book.objects.all()
     serializer_class = serializers.BookSerializer
 
@@ -24,10 +26,12 @@ class BookViewSet(ListCreateAPIView):
         serializer.save(author_id=self.request.data['author_id'])
 
 class UserList(generics.ListCreateAPIView):
+    permission_classes = [AllowAny]
     queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
 
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [AllowAny]
     queryset = User.objects.all()
     serializer_class = serializers.UserSerializer 

@@ -12,6 +12,18 @@ class AuthorSerializer(serializers.ModelSerializer):
             'last_name',
             'middle_name',
         )
+    
+    def create(self, validated_data):
+        return models.Author.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.middle_name = validated_data.get('middle_name', instance.middle_name)
+
+
+        instance.save()
+        return instance
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -24,6 +36,13 @@ class BookSerializer(serializers.ModelSerializer):
             'author',
             'title',
         )
+
+    def create(self, validated_data):
+        authors_data = validated_data.pop('author')
+        order = models.Book.objects.create(**validated_data)
+        for author_data in authors_data:
+            models.Author.objects.create(order=order, **author_data)
+        return order        
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
