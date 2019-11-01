@@ -41,6 +41,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.UserSerializer 
 
 class FileUploadView(APIView):
+    permission_classes = [AllowAny]
     parser_class = (FileUploadParser,)
 
     def post(self, request, *args, **kwargs):
