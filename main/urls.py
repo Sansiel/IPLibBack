@@ -7,4 +7,5 @@ urlpatterns = [
     path('users/<int:pk>', views.UserDetail.as_view()),
     path('author', views.AuthorViewSet.as_view()),
     path('book', views.BookViewSet.as_view()),
+    path('upload', views.FileUploadView.as_view()),
 ]

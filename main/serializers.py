@@ -58,3 +58,8 @@ def jwt_response_payload_handler(token, user=None, request=None):
         'token': token,
         'is_staff': UserSerializer(user, context={'request': request}).data['is_staff']
     } 
+
+class FileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.File
+        fields = "__all__"

@@ -42,3 +42,8 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+
+class File(models.Model):
+    file = models.FileField(blank=False, null=False)
+    def __str__(self):
+        return self.file.name
