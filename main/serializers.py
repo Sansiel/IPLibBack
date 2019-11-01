@@ -6,12 +6,7 @@ from django.contrib.auth.models import User
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Author
-        fields = (
-            'id',
-            'first_name',
-            'last_name',
-            'middle_name',
-        )
+        fields = '__all__'
     
     def create(self, validated_data):
         return models.Author.objects.create(**validated_data)
@@ -31,11 +26,7 @@ class BookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Book
-        fields = (
-            'id',
-            'author',
-            'title',
-        )
+        fields = '__all__'
 
     def create(self, validated_data):
         authors_data = validated_data.pop('author')

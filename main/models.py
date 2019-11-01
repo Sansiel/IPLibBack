@@ -31,6 +31,8 @@ class Book(models.Model):
         max_length=128,
     )
 
+    image = models.URLField(verbose_name='Изображение')
+
     author = models.ForeignKey(
         Author,
         verbose_name='Автор',
