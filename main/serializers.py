@@ -29,7 +29,7 @@ class BookSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-        authors_data = validated_data.pop('author')
+        authors_data = validated_data.pop('author_id')
         order = models.Book.objects.create(**validated_data)
         for author_data in authors_data:
             models.Author.objects.create(order=order, **author_data)
