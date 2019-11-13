@@ -10,7 +10,7 @@ from . import models
 from . import serializers
 from django.contrib.auth.models import User
 from .models import Book
-from .models import BookRepository
+from .book import BookRepository
 
 
 class AuthorViewSet(ListCreateAPIView):
