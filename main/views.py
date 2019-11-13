@@ -9,6 +9,8 @@ from rest_framework.views import APIView
 from . import models
 from . import serializers
 from django.contrib.auth.models import User
+from .models import Book
+from .models import BookRepository
 
 
 class AuthorViewSet(ListCreateAPIView):
@@ -21,6 +23,14 @@ class BookViewSet(ListCreateAPIView):
     permission_classes = [AllowAny]
     queryset = models.Book.objects.all()
     serializer_class = serializers.BookSerializer
+
+    def get_queryset(self):
+        querystring = self.request.query_params.get('q')
+
+        if querystring is not None:
+            return BookRepository.search(querystring)
+
+        return Book.objects.all()
 
     def perform_create(self, serializer):
         print(self.request.data)
