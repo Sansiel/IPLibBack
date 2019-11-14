@@ -33,6 +33,8 @@ class Book(models.Model):
 
     image = models.URLField(verbose_name='Изображение')
 
+    start_use_date = models.DateTimeField(null=True, blank=True, db_index=True, verbose_name='Дата загрузки в библиотеку')
+
     author = models.ForeignKey(
         Author,
         verbose_name='Автор',

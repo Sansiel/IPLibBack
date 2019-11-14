@@ -8,4 +8,5 @@ urlpatterns = [
     path('author', views.AuthorViewSet.as_view()),
     path('book', views.BookViewSet.as_view()),
     path('upload', views.FileUploadView.as_view()),
+    path('ws/', views.BookView.as_view()),
 ]

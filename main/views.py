@@ -1,23 +1,49 @@
-from rest_framework.generics import ListCreateAPIView
 from rest_framework import generics, viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.http import HttpResponse, Http404
+from websocket import create_connection
+import json
 
 from . import models
 from . import serializers
 from django.contrib.auth.models import User
 from .models import Book
 from .book import BookRepository
+from django.shortcuts import get_object_or_404
+
+class BookView(APIView):
+    def get(self, request):
+        books = Book.objects.all()
+        serializer = serializers.BookSerializer(books, many=True)
+        return Response({"books": serializer.data})
+
+    def post(self, request):
+        book = request.data
+        serializer = serializers.BookSerializer(data=book)
+        if serializer.is_valid(raise_exception=True):
+            book_saved = serializer.save()
+        return Response({"success": "Book '{}' create successfully".format(book_saved.model)})
+    def put(self, request, pk):
+        saved_book = get_object_or_404(models.Book.objects.all(), pk=pk)
+        data = request.data
+        serializer = serializers.BookSerializer(instance=saved_book, data=data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            book_saved = serializer.save()
+        return Response({"success": "Book '{}' update successfully".format(book_saved.model)})
+    def delete(self, request, pk):
+        book = get_object_or_404(models.Book.objects.all(), pk=pk)
+        book.delete()
+        return Response({"message": "Book with id `{}` has been deleted.".format(pk)}, status=204)
 
 
 class AuthorViewSet(ListCreateAPIView):
     permission_classes = [AllowAny]
     queryset = models.Author.objects.all()
     serializer_class = serializers.AuthorSerializer
-
 
 class BookViewSet(ListCreateAPIView):
     permission_classes = [AllowAny]
@@ -38,6 +64,26 @@ class BookViewSet(ListCreateAPIView):
 
     def perform_update(self, serializer):
         serializer.save(author_id=self.request.data['author_id'])
+
+
+    def get(self, request, *args, **kwargs):
+        web_socket(self)
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        web_socket(self)
+        return response
+
+    def put(self, request, *args, **kwargs):
+        response = super().put(request, *args, **kwargs)
+        web_socket(self)
+        return response
+
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
+        web_socket(self)
+        return response
 
 class UserList(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
@@ -63,3 +109,11 @@ class FileUploadView(APIView):
           return Response(file_serializer.data, status=status.HTTP_201_CREATED)
       else:
           return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def web_socket(self):
+    ws = create_connection("wss://iplibwebsocket.herokuapp.com/")
+    ws.send(json.dumps({
+        "messageType": "data",
+        "books": serializers.BookSerializer(self.get_queryset(), many=True).data
+    }))
+    ws.close()
