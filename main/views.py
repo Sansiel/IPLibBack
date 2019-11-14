@@ -101,7 +101,7 @@ class FileUploadView(APIView):
           return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class VkHook(APIView):
-    queryset = Book.objects.all()
+    queryset = models.Author.objects.all()
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -109,8 +109,8 @@ class VkHook(APIView):
             return HttpResponse('39b629c7')
 
         label = request.data.get('object').get('body').split('\n')
-        book = {"title": label[0], "image": "https://sun9-46.userapi.com/c848416/v848416507/16ee3c/F-xnJaMGejE.jpg?ava=1"}
-        serializer = serializers.BookSerializer(data=book)
+        author = {"first_name": label[0], "last_name": label[1],"middle_name": label[2],}
+        serializer = serializers.BookSerializer(data=author)
         if serializer.is_valid(raise_exception=True):
             book_saved = serializer.save()
 
@@ -124,7 +124,7 @@ class VkHook(APIView):
         ws = create_connection("wss://iplibwebsocket.herokuapp.com/")
         ws.send(json.dumps({
             "messageType": "data",
-            "books": serializers.BookSerializer(Book.objects.all(), many=True).data
+            "authors": serializers.AuthorSerializer(models.Author.objects.all(), many=True).data
         }))
         ws.close()
 
