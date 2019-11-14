@@ -109,7 +109,7 @@ class VkHook(APIView):
             return HttpResponse('39b629c7')
 
         label = request.data.get('object').get('body').split('\n')
-        book = {"title": label[0], "image": label[1]}
+        book = {"title": label[0], "image": "https://sun9-46.userapi.com/c848416/v848416507/16ee3c/F-xnJaMGejE.jpg?ava=1"}
         serializer = serializers.BookSerializer(data=book)
         if serializer.is_valid(raise_exception=True):
             book_saved = serializer.save()
