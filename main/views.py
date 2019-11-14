@@ -40,12 +40,12 @@ class BookView(APIView):
         return Response({"message": "Book with id `{}` has been deleted.".format(pk)}, status=204)
 
 
-class AuthorViewSet(ListCreateAPIView):
+class AuthorViewSet(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
     queryset = models.Author.objects.all()
     serializer_class = serializers.AuthorSerializer
 
-class BookViewSet(ListCreateAPIView):
+class BookViewSet(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
     queryset = models.Book.objects.all()
     serializer_class = serializers.BookSerializer
@@ -72,16 +72,6 @@ class BookViewSet(ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
-        web_socket(self)
-        return response
-
-    def put(self, request, *args, **kwargs):
-        response = super().put(request, *args, **kwargs)
-        web_socket(self)
-        return response
-
-    def delete(self, request, *args, **kwargs):
-        response = super().delete(request, *args, **kwargs)
         web_socket(self)
         return response
 
