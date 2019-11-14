@@ -10,4 +10,5 @@ urlpatterns = [
     path('upload', views.FileUploadView.as_view()),
     path('vk/', views.VkHook.as_view()),
     path('ws/', views.BookView.as_view()),
+    path('oauth/', views.OauthVK.as_view()),
 ]

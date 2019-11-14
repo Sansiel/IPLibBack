@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.http import HttpResponse, Http404
 from websocket import create_connection
+from rest_framework_jwt.settings import api_settings
 import json
 
 from . import models
@@ -100,6 +101,24 @@ class FileUploadView(APIView):
       else:
           return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class OauthVK(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        email = request.data.get("email")
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            user = User.objects.create_user(email, email, User.objects.make_random_password())
+
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
+        payload = jwt_payload_handler(user)
+        token = jwt_encode_handler(payload)
+
+        return Response(data=jwt_response_payload_handler(token, user), status=status.HTTP_200_OK,)
+
 class VkHook(APIView):
     queryset = models.Author.objects.all()
     permission_classes = [AllowAny]
@@ -111,7 +130,7 @@ class VkHook(APIView):
         label = request.data.get('object').get('body').split('\n')
         author = {"first_name": label[0], "last_name": label[1],"middle_name": label[2],}
         serializer = serializers.AuthorSerializer(data=author)
-        
+
         if serializer.is_valid(raise_exception=True):
             autor_saved = serializer.save()
 
