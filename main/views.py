@@ -128,11 +128,11 @@ class VkHook(APIView):
             return HttpResponse('39b629c7')
 
         label = request.data.get('object').get('body').split('\n')
-        author = {"first_name": label[0], "last_name": label[1],"middle_name": label[2],}
+        author = {"first_name": label[0], "last_name": label[1],"middle_name": label[2],}        
         serializer = serializers.AuthorSerializer(data=author)
 
         if serializer.is_valid(raise_exception=True):
-            autor_saved = serializer.save()
+            autor_saved = serializer.delete()
 
         ws = create_connection("wss://iplibwebsocket.herokuapp.com/")
         ws.send(json.dumps({
