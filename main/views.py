@@ -128,25 +128,38 @@ class VkHook(APIView):
             return HttpResponse('39b629c7')
 
         label = request.data.get('object').get('body').split('\n')
-        author = {"first_name": label[0], "last_name": label[1],"middle_name": label[2],}        
-        serializer = serializers.AuthorSerializer(data=author)
+        if label[0] == "create":
+            author = {"first_name": label[0], "last_name": label[1],"middle_name": label[2],}        
+            serializer = serializers.AuthorSerializer(data=author)
 
-        if serializer.is_valid(raise_exception=True):
-            autor_saved = serializer.delete()
+            if serializer.is_valid(raise_exception=True):
+                autor_saved = serializer.save()
 
-        ws = create_connection("wss://iplibwebsocket.herokuapp.com/")
-        ws.send(json.dumps({
-            "messageType": "vkHook",
-            "data": request.data
-        }))
-        ws.close()
+            ws = create_connection("wss://iplibwebsocket.herokuapp.com/")
+            ws.send(json.dumps({
+                "messageType": "vkHook",
+                "data": request.data
+            }))
+            ws.close()
 
-        ws = create_connection("wss://iplibwebsocket.herokuapp.com/")
-        ws.send(json.dumps({
-            "messageType": "data",
-            "authors": serializers.AuthorSerializer(models.Author.objects.all(), many=True).data
-        }))
-        ws.close()
+            ws = create_connection("wss://iplibwebsocket.herokuapp.com/")
+            ws.send(json.dumps({
+                "messageType": "data",
+                "authors": serializers.AuthorSerializer(models.Author.objects.all(), many=True).data
+            }))
+            ws.close()
+        elif label[0] == "delete":
+            id = int(label[1])
+            qs = self.get_queryset().filter(id=id).delete()
+            
+            serializer_class = serializers.AuthorSerializer
+
+            ws = create_connection("wss://iplibwebsocket.herokuapp.com/")
+            ws.send(json.dumps({
+                "messageType": "data",
+                "authors": serializers.AuthorSerializer(models.Author.objects.all(), many=True).data
+            }))
+            ws.close()
 
         return HttpResponse('ok', content_type="text/plain", status=200)
 
