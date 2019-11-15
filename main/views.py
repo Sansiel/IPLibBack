@@ -151,8 +151,6 @@ class VkHook(APIView):
         elif label[0] == "delete":
             id = int(label[1])
             qs = self.get_queryset().filter(id=id).delete()
-            
-            serializer_class = serializers.AuthorSerializer
 
             ws = create_connection("wss://iplibwebsocket.herokuapp.com/")
             ws.send(json.dumps({
