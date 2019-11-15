@@ -150,7 +150,9 @@ class VkHook(APIView):
             ws.close()
         elif label[0] == "delete":
             id = int(label[1])
-            qs = self.get_queryset().get(pk=id).delete()
+            # qs = self.get_queryset().get(pk=id).delete()
+            autor = models.Author.objects.get(id = id)
+            autor.delete()
 
             ws = create_connection("wss://iplibwebsocket.herokuapp.com/")
             ws.send(json.dumps({
